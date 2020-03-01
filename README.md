@@ -1,3 +1,20 @@
+# Devetry Lunch and Learn
+## Programable Hardware with Arduino
+
+### Our base board configuration:
+Please configure your board as follows using eight jumper cables:
+
+![Base Setup](./assets/base.png)
+
+In the above diagram, we connect the 5V pin on the Arduino to the HIGH rail on our breadboard, and the Ground pin oun our Arduino to the LOW rail.
+
+We also connect our rails together.
+
+### A simple circuit:
+- Note, how there is no software required for this circuit.
+
+![Base Setup](./assets/base_with_led.png)
+
 - Wire Board
 - Wire LED
 - Turn on LED

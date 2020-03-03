@@ -53,9 +53,20 @@ void loop()
 Note how the LED pulses every half second.
 
 ### Controlling the LED with a momentary switch (pushbutton):
-- Unplug LED
-- Wire Button
-- Upload Sketch
+1.  Unplug LED from the breadboard
+2.  Add a momentary switch (pushbutton) according to the following diagram
+
+![Base Setup](./assets/led_button.png)
+
+Note how the button turns the LED on and off with a basic circuit
+
+### Controlling the LED with a momentary switch in software:
+
+1.  Remove the magenta jumper cables from the previous diagram
+2.  Connect the `anode` of the LED to pin 8 on the Arduino
+3.  Connect the pushbutton to pin 2 of the Arduino as shown in the diagram
+
+![Base Setup](./assets/led_button_2.png)
 
 ```cpp
 const int LED_PIN {8};
@@ -73,10 +84,23 @@ void loop()
 }
 ```
 
-- Note funk behavior
-- Add pulldown resistor
+Note the funky LED.  It is sometimes turning on all by itself...
+To fix this we will need to add a `pulldown resistor` to our circuit.
 
--On / Off behavior
+Add one according to the following diagram:
+
+![Base Setup](./assets/led_button_pulldown.png)
+
+- The `pulldown resistor` completes a circuit from `pin 8` to ground THROUGH A RESISTOR.
+- So when the button is NOT pressed, we say that `pin 8` is `grounded` ensuring the resting logic level is `LOW`
+- However, when we push the button, electricity can flow between `5V` and `pin 8` thus brining the logic level `HIGH`
+
+### Toggling the LED with with software:
+
+Without changing our circuit, we can update our source code to look like the following.
+
+1.  Compile and upload this code to your Arduino
+2.  Note any unusual behavior
 
 ```cpp
 const int LED_PIN {8};
@@ -98,7 +122,14 @@ void loop()
 }
 ```
 
-- Explain switch bouncing
+### De-bouncing our momentary switch with software:
+
+Our pushbutton is "bouncing"
+
+![Base Setup](./assets/bounce.jpg)
+
+Let's see how we can resolve this with software:
+
 
 ```cpp
 const int LED_PIN {8};
@@ -124,9 +155,12 @@ void loop()
 }
 ```
 
-- Try to make our LED blink when button is pressed
+We add a 40 millisecond delay after a the button is read in the HIGH state to allow the bouncing to settle.
 
-Show how will start, but wont turn off:
+### Making our LED blink via a button press:
+
+The LED will start blinking, but will it stop?
+
 ```cpp
 const int LED_PIN {8};
 const int BUTTON_PIN {2};
@@ -157,8 +191,12 @@ void loop()
 }
 ```
 
-- Discuss problems with delay
-- Show how interrupt can help
+- The `delay` command actually halts all activity on the Arduino temporarily.
+- This means the main loop is **not** being executed, and consequently the `digitalRead` on our `BUTTON_PIN` is not executed.
+- In order to toggle LED_BLINKING therefore, we would have to time our button press at the exact moment that we are not `delay`'ing execution.
+
+### Fixing our blink behavior with a hardware interrupt:
+
 
 ```cpp
 const int LED_PIN {8};
@@ -195,3 +233,5 @@ void loop()
   }
 }
 ```
+
+- We configure our button pin to be an `interruptPin` that will call the function `readButtonPinWithDebounce` when it receives a `HIGH` signal.

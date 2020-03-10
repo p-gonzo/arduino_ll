@@ -235,3 +235,122 @@ void loop()
 ```
 
 - We configure our button pin to be an `interruptPin` that will call the function `readButtonPinWithDebounce` when it receives a `HIGH` signal.
+
+### Adding a more interesting output:
+
+- Arduino has a very dedicated open source community behind it
+- Many, many pre-written libraries exist to interface with common hardware components
+- One such component is called a **Servo Motor**
+- Most hobbyist servos are capable of rotating 180 degrees
+- `Sketch` > `Include Library` > `Servo`.
+
+![Base Setup](./assets/servo.png)
+
+```cpp
+#include <Servo.h>
+
+const int LED_PIN {8};
+const int BUTTON_PIN {2};
+
+int LED_STATE{LOW};
+bool LED_BLINKING {false};
+
+Servo servo;
+int servoDegree = 0;
+
+void setup()
+{
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), readButtonPinWithDebounce, RISING);
+  servo.attach(9);
+}
+
+void readButtonPinWithDebounce()
+{
+  delay(40);
+  if (digitalRead(BUTTON_PIN))
+    LED_BLINKING = !LED_BLINKING;
+}
+
+void loop()
+{
+  if (LED_BLINKING)
+  {
+    digitalWrite(LED_PIN, LED_STATE);
+    servo.write(servoDegree);
+    delay(100);
+    LED_STATE = !LED_STATE; 
+    servoDegree = (servoDegree + 5) % 180;
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+```
+
+### Communicating Via Serial I/O
+
+- Often time you will want your Arduino to communicate with a larger application
+- The built-in `Serial` library can be used for such communication
+- Most languages have a Serial protocol
+  - Python PySerial
+  - Node SerialPort
+
+```cpp
+#include <Servo.h>
+
+const int LED_PIN {8};
+const int BUTTON_PIN {2};
+
+int LED_STATE{LOW};
+bool LED_BLINKING {false};
+
+Servo servo;
+int servoDegree = 0;
+
+void setup()
+{
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), readButtonPinWithDebounce, RISING);
+  servo.attach(9);
+  Serial.begin(9600);
+}
+
+void readButtonPinWithDebounce()
+{
+  delay(40);
+  if (digitalRead(BUTTON_PIN))
+    LED_BLINKING = !LED_BLINKING;
+}
+
+void loop()
+{
+  if (LED_BLINKING)
+  {
+    digitalWrite(LED_PIN, LED_STATE);
+    servo.write(servoDegree);
+    delay(100);
+    LED_STATE = !LED_STATE; 
+    servoDegree = (servoDegree + 5) % 181;
+    Serial.println(servoDegree);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+    if (Serial.available() > 0)
+    {
+      int newPos = Serial.parseInt();
+      if (newPos != 0) // Ignore zero from parseInt timeout
+      {
+        servoDegree = newPos % 181;
+        servo.write(servoDegree);
+      }
+    }
+  }
+}
+```
+
+- When the Servo is not moving, we can send a direct override over Serial

@@ -354,3 +354,19 @@ void loop()
 ```
 
 - When the Servo is not moving, we can send a direct override over Serial
+
+### Good References:
+
+- [Official Arduino Docs](https://www.arduino.cc/reference/en/)
+- [Built In Software & Hardware Examples](https://www.arduino.cc/en/Tutorial/BuiltInExamples)
+- [Arduino VS C++](https://arduino.stackexchange.com/a/819)
+- [Some cool example projects (YouTube)](https://www.youtube.com/watch?v=Ox-9eOc3bQU)
+
+### Final Thoughts:
+
+- Arduino is a lot of fun!
+- Can be used alone, but they're best used *in tandem* with additional software
+  - Ex: A Python Flask Server running on a host machine communicating with Arduino over Serial
+- Raspberry Pi's are also great
+  - You can have the Flask Server && Hardware running off the same device
+  - Downside of the Pi: Hardware and GPIO can be a little more cumbersome to interface
